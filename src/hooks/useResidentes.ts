@@ -9,6 +9,15 @@ export const useResidentes = () => {
   });
 };
 
+export const useResidente = (id: number | undefined) => {
+  return useQuery({
+    queryKey: ['residente', id],
+    queryFn: () => residenteService.obtenerPorId(id!),
+    enabled: !!id && id > 0,
+    retry: false, // No reintentar si da 404
+  });
+};
+
 export const useCrearResidente = () => {
   const queryClient = useQueryClient();
   return useMutation({

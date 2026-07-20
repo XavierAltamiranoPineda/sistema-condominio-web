@@ -13,7 +13,16 @@ import { ComunicadosPage } from './pages/comunicados/ComunicadosPage';
 
 import { ReportesPage } from './pages/reportes/ReportesPage';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchInterval: 8000,       // Consulta la API cada 8 segundos
+      refetchOnWindowFocus: true,  // Refresca al volver a la ventana (ej: Desktop minimizado)
+      staleTime: 0,                // Los datos siempre se consideran desactualizados → refresco inmediato
+      retry: 1,                    // Reintenta 1 vez si falla la petición
+    },
+  },
+});
 
 function App() {
   return (

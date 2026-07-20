@@ -7,6 +7,11 @@ export const residenteService = {
     return data;
   },
 
+  obtenerPorId: async (id: number): Promise<Residente> => {
+    const { data } = await api.get<Residente>(`/api/residentes/${id}`);
+    return data;
+  },
+
   crearResidente: async (residente: ResidenteRequest): Promise<Residente> => {
     const { data } = await api.post<Residente>('/api/residentes', residente);
     return data;
