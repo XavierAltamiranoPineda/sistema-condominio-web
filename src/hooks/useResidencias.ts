@@ -30,10 +30,15 @@ export const useActualizarResidencia = () => {
   });
 };
 
-export const useEliminarResidencia = () => {
+/**
+ * Cambia el estado de una residencia (OCUPADA ↔ DESOCUPADA).
+ * Utiliza PUT /api/residencias/{id} — el campo 'estado' es opcional en el backend.
+ */
+export const useCambiarEstadoResidencia = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => residenciaService.eliminarResidencia(id),
+    mutationFn: ({ id, data }: { id: number; data: ResidenciaRequest }) =>
+      residenciaService.actualizarResidencia(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['residencias'] });
     },

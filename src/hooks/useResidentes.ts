@@ -22,7 +22,7 @@ export const useCrearResidente = () => {
 export const useActualizarResidente = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: ResidenteRequest }) => 
+    mutationFn: ({ id, data }: { id: number; data: ResidenteRequest }) =>
       residenteService.actualizarResidente(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['residentes'] });
@@ -30,10 +30,30 @@ export const useActualizarResidente = () => {
   });
 };
 
-export const useEliminarResidente = () => {
+/**
+ * Desactiva un residente mediante DELETE /api/residentes/{id}.
+ * El backend realiza un soft-delete: cambia el estado a INACTIVO.
+ * El registro NO se elimina físicamente.
+ */
+export const useDesactivarResidente = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => residenteService.eliminarResidente(id),
+    mutationFn: (id: number) => residenteService.desactivarResidente(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['residentes'] });
+    },
+  });
+};
+
+/**
+ * Activa un residente enviando estado=ACTIVO en el PUT /api/residentes/{id}.
+ * Mantiene los demás datos del residente intactos.
+ */
+export const useActivarResidente = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: ResidenteRequest }) =>
+      residenteService.actualizarResidente(id, { ...data, estado: 'ACTIVO' }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['residentes'] });
     },

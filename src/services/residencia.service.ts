@@ -12,12 +12,15 @@ export const residenciaService = {
     return data;
   },
 
+  /**
+   * Actualiza código, propietario, cuota y/o estado de una residencia.
+   * El campo 'estado' es opcional en el backend (EstadoResidencia: OCUPADA | DESOCUPADA).
+   * Si se omite, el backend conserva el estado actual.
+   *
+   * Endpoint: PUT /api/residencias/{id}
+   */
   actualizarResidencia: async (id: number, residencia: ResidenciaRequest): Promise<Residencia> => {
     const { data } = await api.put<Residencia>(`/api/residencias/${id}`, residencia);
     return data;
-  },
-
-  eliminarResidencia: async (id: number): Promise<void> => {
-    await api.delete(`/api/residencias/${id}`);
   },
 };

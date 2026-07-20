@@ -17,7 +17,12 @@ export const residenteService = {
     return data;
   },
 
-  eliminarResidente: async (id: number): Promise<void> => {
+  /**
+   * Desactiva un residente (soft-delete → estado INACTIVO).
+   * El backend implementa DELETE /api/residentes/{id} como soft-delete.
+   * NO elimina físicamente el registro.
+   */
+  desactivarResidente: async (id: number): Promise<void> => {
     await api.delete(`/api/residentes/${id}`);
-  }
+  },
 };
