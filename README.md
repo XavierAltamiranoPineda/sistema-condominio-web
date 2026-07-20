@@ -40,7 +40,7 @@ src/
 3. Configurar variables de entorno:
    Copiar o crear el archivo `.env` en la raíz del proyecto.
    ```env
-   VITE_API_URL=https://sistema-condominio-api-production.up.railway.app
+   VITE_API_URL={tu url}
    ```
 4. Ejecutar el servidor de desarrollo:
    ```bash
@@ -56,7 +56,7 @@ La autenticación se realiza mediante JWT. El token se almacena en el `localStor
 
 *   **Auth:** Login con validación y JWT.
 *   **Dashboard:** Resumen general de la administración.
-*   *(Próximamente)* **Residentes:** CRUD de residentes.
+*   *(Realizado)* **Residentes:** CRUD de residentes.
 *   *(Próximamente)* **Residencias:** Gestión de casas/departamentos.
 *   *(Próximamente)* **Pagos:** Registro y estado de cuenta.
 *   *(Próximamente)* **Comunicados:** Emisión de avisos.
