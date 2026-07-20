@@ -16,10 +16,11 @@ import { ReportesPage } from './pages/reportes/ReportesPage';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchInterval: 8000,       // Consulta la API cada 8 segundos
-      refetchOnWindowFocus: true,  // Refresca al volver a la ventana (ej: Desktop minimizado)
-      staleTime: 0,                // Los datos siempre se consideran desactualizados → refresco inmediato
-      retry: 1,                    // Reintenta 1 vez si falla la petición
+      refetchInterval: 3000,              // Consulta la API cada 3 segundos (ventana activa)
+      refetchIntervalInBackground: false, // No consume recursos si la ventana está minimizada
+      refetchOnWindowFocus: true,         // Refresca al volver a la ventana
+      staleTime: 0,                       // Los datos siempre se consideran desactualizados
+      retry: 1,                           // Reintenta 1 vez si falla la petición
     },
   },
 });
