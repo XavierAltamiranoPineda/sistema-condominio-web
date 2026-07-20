@@ -6,6 +6,7 @@ import { ProtectedRoute } from './routes/ProtectedRoute';
 import { MainLayout } from './layouts/MainLayout';
 import { Dashboard } from './pages/dashboard/Dashboard';
 import { ResidentesPage } from './pages/residentes/ResidentesPage';
+import { ResidenciasPage } from './pages/residencias/ResidenciasPage';
 
 const queryClient = new QueryClient();
 
@@ -35,7 +36,7 @@ function App() {
                 {/* Rutas exclusivas para el Administrador */}
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_ADMINISTRADOR']} />}>
                   <Route path="/residentes" element={<ResidentesPage />} />
-                  <Route path="/residencias" element={<Placeholder title="Gestión de Residencias" />} />
+                  <Route path="/residencias" element={<ResidenciasPage />} />
                 </Route>
 
                 <Route path="/pagos" element={<Placeholder title="Gestión de Pagos" />} />
