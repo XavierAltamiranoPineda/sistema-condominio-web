@@ -1,5 +1,5 @@
 import api from '../api/axios';
-import type { Residencia, ResidenciaRequest } from '../types/residencia';
+import type { Residencia, ResidenciaRequest, AsignacionRequest } from '../types/residencia';
 
 export const residenciaService = {
   listarResidencias: async (): Promise<Residencia[]> => {
@@ -22,5 +22,13 @@ export const residenciaService = {
   actualizarResidencia: async (id: number, residencia: ResidenciaRequest): Promise<Residencia> => {
     const { data } = await api.put<Residencia>(`/api/residencias/${id}`, residencia);
     return data;
+  },
+
+  /**
+   * Asigna un residente a una residencia mediante el nuevo endpoint dedicado.
+   * Endpoint: POST /api/asignaciones
+   */
+  asignarResidente: async (asignacion: AsignacionRequest): Promise<void> => {
+    await api.post('/api/asignaciones', asignacion);
   },
 };

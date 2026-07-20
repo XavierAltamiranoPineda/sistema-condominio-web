@@ -32,3 +32,13 @@ export interface ResidenciaRequest {
   /** Opcional al crear; requerido para cambiar estado al editar */
   estado?: string;
 }
+
+/**
+ * Request para asignar un residente a una residencia.
+ * Mapeado desde AsignacionRequest.java
+ */
+export interface AsignacionRequest {
+  idResidente: number;
+  idResidencia: number;
+  parentesco?: string;
+}

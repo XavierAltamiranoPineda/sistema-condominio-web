@@ -57,7 +57,7 @@ La autenticación se realiza mediante JWT. El token se almacena en el `localStor
 *   **Auth:** Login con validación y JWT.
 *   **Dashboard:** Resumen general de la administración.
 *   *(Realizado)* **Residentes:** CRUD de residentes.
-*   *(Próximamente)* **Residencias:** Gestión de casas/departamentos.
-*   *(Próximamente)* **Pagos:** Registro y estado de cuenta.
-*   *(Próximamente)* **Comunicados:** Emisión de avisos.
+*   *(Realizado)* **Residencias:** Gestión de casas/departamentos.
+*   *(Realizado)* **Pagos:** Registro y estado de cuenta.
+*   *(Realizado)* **Comunicados:** Emisión de avisos.
 *   *(Próximamente)* **Reportes:** Resumen de novedades.

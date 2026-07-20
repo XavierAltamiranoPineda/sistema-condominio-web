@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link2, Loader2, UserCheck } from 'lucide-react';
 import { useResidentes } from '../../../hooks/useResidentes';
-import { useResidencias, useActualizarResidencia } from '../../../hooks/useResidencias';
+import { useResidencias, useAsignarResidente } from '../../../hooks/useResidencias';
 
 interface Props {
   onSuccess: (mensaje: string) => void;
@@ -10,7 +10,7 @@ interface Props {
 export const AsignarResidenciaSection = ({ onSuccess }: Props) => {
   const { data: residentes } = useResidentes();
   const { data: residencias } = useResidencias();
-  const { mutateAsync: actualizarResidencia, isPending } = useActualizarResidencia();
+  const { mutateAsync: asignarResidente, isPending } = useAsignarResidente();
 
   const [selectedResidenteId, setSelectedResidenteId] = useState<string>('');
   const [selectedResidenciaId, setSelectedResidenciaId] = useState<string>('');
@@ -30,19 +30,22 @@ export const AsignarResidenciaSection = ({ onSuccess }: Props) => {
     if (!residencia) return;
 
     try {
-      await actualizarResidencia({
-        id: residencia.idResidencia,
-        data: {
-          codigoCasa: residencia.codigoCasa,
-          cuotaMensual: residencia.cuotaMensual,
-          idPropietario: Number(selectedResidenteId),
-        },
+      await asignarResidente({
+        idResidente: Number(selectedResidenteId),
+        idResidencia: Number(selectedResidenciaId),
       });
       onSuccess(`Casa "${residencia.codigoCasa}" asignada correctamente`);
       setSelectedResidenteId('');
       setSelectedResidenciaId('');
-    } catch (err) {
-      setError('Error al asignar la residencia. Intente nuevamente.');
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string }; status?: number } };
+      const apiMsg = axiosErr?.response?.data?.message;
+      
+      if (apiMsg) {
+        setError(apiMsg);
+      } else {
+        setError('Error al asignar la residencia. Intente nuevamente.');
+      }
       console.error(err);
     }
   };

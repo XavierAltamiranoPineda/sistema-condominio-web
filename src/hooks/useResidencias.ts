@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { residenciaService } from '../services/residencia.service';
-import type { ResidenciaRequest } from '../types/residencia';
+import type { ResidenciaRequest, AsignacionRequest } from '../types/residencia';
 
 export const useResidencias = () => {
   return useQuery({
@@ -39,6 +39,19 @@ export const useCambiarEstadoResidencia = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: ResidenciaRequest }) =>
       residenciaService.actualizarResidencia(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['residencias'] });
+    },
+  });
+};
+
+/**
+ * Asigna un residente a una residencia (POST /api/asignaciones).
+ */
+export const useAsignarResidente = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: AsignacionRequest) => residenciaService.asignarResidente(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['residencias'] });
     },

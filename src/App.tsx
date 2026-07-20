@@ -8,6 +8,9 @@ import { Dashboard } from './pages/dashboard/Dashboard';
 import { ResidentesPage } from './pages/residentes/ResidentesPage';
 import { ResidenciasPage } from './pages/residencias/ResidenciasPage';
 
+import { PagosPage } from './pages/pagos/PagosPage';
+import { ComunicadosPage } from './pages/comunicados/ComunicadosPage';
+
 const queryClient = new QueryClient();
 
 // Componentes temporales (Placeholders)
@@ -37,10 +40,10 @@ function App() {
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_ADMINISTRADOR']} />}>
                   <Route path="/residentes" element={<ResidentesPage />} />
                   <Route path="/residencias" element={<ResidenciasPage />} />
+                  <Route path="/pagos" element={<PagosPage />} />
+                  <Route path="/comunicados" element={<ComunicadosPage />} />
                 </Route>
-
-                <Route path="/pagos" element={<Placeholder title="Gestión de Pagos" />} />
-                <Route path="/comunicados" element={<Placeholder title="Comunicados" />} />
+                
                 <Route path="/reportes" element={<Placeholder title="Reportes" />} />
               </Route>
             </Route>
