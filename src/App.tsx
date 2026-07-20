@@ -11,17 +11,9 @@ import { ResidenciasPage } from './pages/residencias/ResidenciasPage';
 import { PagosPage } from './pages/pagos/PagosPage';
 import { ComunicadosPage } from './pages/comunicados/ComunicadosPage';
 
-const queryClient = new QueryClient();
+import { ReportesPage } from './pages/reportes/ReportesPage';
 
-// Componentes temporales (Placeholders)
-const Placeholder = ({ title }: { title: string }) => (
-  <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100/50 h-[600px] flex items-center justify-center">
-    <div className="text-center">
-      <h2 className="text-2xl font-bold text-slate-700 mb-2">{title}</h2>
-      <p className="text-slate-400">Módulo en construcción...</p>
-    </div>
-  </div>
-);
+const queryClient = new QueryClient();
 
 function App() {
   return (
@@ -42,9 +34,8 @@ function App() {
                   <Route path="/residencias" element={<ResidenciasPage />} />
                   <Route path="/pagos" element={<PagosPage />} />
                   <Route path="/comunicados" element={<ComunicadosPage />} />
+                  <Route path="/reportes" element={<ReportesPage />} />
                 </Route>
-                
-                <Route path="/reportes" element={<Placeholder title="Reportes" />} />
               </Route>
             </Route>
 

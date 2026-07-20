@@ -1,88 +1,155 @@
-import { Users, Building, CreditCard, Bell, ArrowUpRight } from 'lucide-react';
+import { 
+  Users, 
+  Home, 
+  AlertTriangle, 
+  CheckCircle2, 
+  Wallet,
+  Megaphone,
+  Loader2,
+  DollarSign,
+  Building
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useReporteGeneral } from '../../hooks/useReportes';
+import { useResidentes } from '../../hooks/useResidentes';
+import { useResidencias } from '../../hooks/useResidencias';
+import { useCuotas } from '../../hooks/useCuotas';
+import { useComunicados } from '../../hooks/useComunicados';
+import { KpiCard } from '../../components/dashboard/KpiCard';
 
 export const Dashboard = () => {
   const { user } = useAuth();
   
+  const { data: reporte, isLoading: isReporteLoading, isError: isReporteError } = useReporteGeneral();
+  const { data: residentes, isLoading: isResidentesLoading } = useResidentes();
+  const { data: residencias, isLoading: isResidenciasLoading } = useResidencias();
+  const { data: cuotas, isLoading: isCuotasLoading } = useCuotas();
+  const { data: comunicados, isLoading: isComunicadosLoading } = useComunicados();
+
+  const isLoading = isReporteLoading || isResidentesLoading || isResidenciasLoading || isCuotasLoading || isComunicadosLoading;
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[600px] bg-white rounded-2xl border border-slate-100 shadow-sm">
+        <Loader2 className="w-10 h-10 text-indigo-500 animate-spin mb-4" />
+        <p className="text-slate-500 font-medium">Cargando información consolidada...</p>
+      </div>
+    );
+  }
+
+  if (isReporteError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[600px] bg-white rounded-2xl border border-slate-100 shadow-sm">
+        <div className="p-4 bg-red-50 rounded-full mb-4">
+          <AlertTriangle className="w-10 h-10 text-red-500" />
+        </div>
+        <p className="text-red-600 font-medium text-lg mb-2">Error de conexión</p>
+        <p className="text-slate-500">No se pudo cargar la información del reporte general.</p>
+      </div>
+    );
+  }
+
+  // Cálculos solicitados
+  const totalResidentes = residentes?.length || 0;
+  const totalResidencias = residencias?.length || 0;
+  const residenciasOcupadas = residencias?.filter(r => r.estado === 'OCUPADA').length || 0;
+  const residenciasDesocupadas = residencias?.filter(r => r.estado === 'DESOCUPADA').length || 0;
+  
+  // Pagos pendientes (cantidad de cuotas con saldo)
+  const pagosPendientes = cuotas?.filter(c => c.saldoPendiente > 0).length || 0;
+
+  // Recaudación del mes actual (sumamos monto pagado de las cuotas cuyo mes/año coinciden con hoy)
+  const fechaActual = new Date();
+  const mesActual = fechaActual.getMonth() + 1;
+  const anioActual = fechaActual.getFullYear();
+  const recaudacionMensual = cuotas
+    ?.filter(c => c.mes === mesActual && c.anio === anioActual)
+    .reduce((sum, c) => sum + c.montoPagado, 0) || 0;
+
+  // Comunicados activos (sin vencimiento o con vencimiento futuro)
+  const comunicadosActivos = comunicados?.filter(c => {
+    if (!c.fechaVencimiento) return true;
+    return new Date(c.fechaVencimiento) >= fechaActual;
+  }).length || 0;
+
+  const isEstadoOk = reporte?.estado === 'OK';
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-7xl mx-auto space-y-8">
+      {/* Cabecera */}
+      <div>
+        <h1 className="text-2xl font-bold text-slate-800">
+          Hola, {user?.usuario} 👋
+        </h1>
+        <p className="text-slate-500 text-sm mt-1">
+          Aquí tienes un resumen general del estado del condominio hoy.
+        </p>
+      </div>
+
+      {/* Estado del Sistema */}
+      <div className={`p-4 rounded-xl border flex items-center shadow-sm animate-in fade-in slide-in-from-bottom-4 ${
+        isEstadoOk 
+          ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
+          : 'bg-amber-50 border-amber-200 text-amber-800'
+      }`}>
+        <div className="mr-3">
+          {isEstadoOk ? <CheckCircle2 className="w-6 h-6" /> : <AlertTriangle className="w-6 h-6" />}
+        </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Bienvenido, {user?.usuario}</h1>
-          <p className="text-slate-500 mt-1">Aquí tienes un resumen del estado del condominio.</p>
+          <h3 className="font-semibold">{isEstadoOk ? 'Estado: OK' : 'Estado: ALERTA'}</h3>
+          <p className="text-sm opacity-90">
+            {isEstadoOk 
+              ? '🟢 Sin novedades. El condominio se encuentra al día.' 
+              : `🔴 Alertas encontradas según sistema: ${reporte?.novedades?.map(n => n.tipo.replace('_', ' ')).join(', ')}`}
+          </p>
         </div>
       </div>
 
+      {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Tarjeta 1 */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100/50 hover:shadow-md transition-shadow group">
-          <div className="flex justify-between items-start mb-4">
-            <div className="p-3 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-              <Users className="w-6 h-6" />
-            </div>
-            <span className="flex items-center text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
-              +12% <ArrowUpRight className="w-3 h-3 ml-1" />
-            </span>
-          </div>
-          <div>
-            <p className="text-3xl font-bold text-slate-900">--</p>
-            <p className="text-sm font-medium text-slate-500 mt-1">Total Residentes</p>
-          </div>
-        </div>
-
-        {/* Tarjeta 2 */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100/50 hover:shadow-md transition-shadow group">
-          <div className="flex justify-between items-start mb-4">
-            <div className="p-3 rounded-xl bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-              <Building className="w-6 h-6" />
-            </div>
-          </div>
-          <div>
-            <p className="text-3xl font-bold text-slate-900">--</p>
-            <p className="text-sm font-medium text-slate-500 mt-1">Residencias Registradas</p>
-          </div>
-        </div>
-
-        {/* Tarjeta 3 */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100/50 hover:shadow-md transition-shadow group">
-          <div className="flex justify-between items-start mb-4">
-            <div className="p-3 rounded-xl bg-amber-50 text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors">
-              <CreditCard className="w-6 h-6" />
-            </div>
-          </div>
-          <div>
-            <p className="text-3xl font-bold text-slate-900">--</p>
-            <p className="text-sm font-medium text-slate-500 mt-1">Pagos Pendientes</p>
-          </div>
-        </div>
-
-        {/* Tarjeta 4 */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100/50 hover:shadow-md transition-shadow group">
-          <div className="flex justify-between items-start mb-4">
-            <div className="p-3 rounded-xl bg-purple-50 text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-              <Bell className="w-6 h-6" />
-            </div>
-          </div>
-          <div>
-            <p className="text-3xl font-bold text-slate-900">--</p>
-            <p className="text-sm font-medium text-slate-500 mt-1">Comunicados Activos</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
-        <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-100/50 min-h-[400px]">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4">Actividad Reciente</h3>
-          <div className="flex items-center justify-center h-[300px] bg-slate-50 rounded-xl border border-dashed border-slate-200">
-             <p className="text-slate-400">Gráficos en desarrollo</p>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100/50 min-h-[400px]">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4">Últimos Comunicados</h3>
-          <div className="flex items-center justify-center h-[300px] bg-slate-50 rounded-xl border border-dashed border-slate-200">
-             <p className="text-slate-400">Sin comunicados recientes</p>
-          </div>
-        </div>
+        <KpiCard 
+          title="Total Residentes" 
+          value={totalResidentes} 
+          icon={<Users className="w-6 h-6 text-blue-600" />} 
+          trend="Residentes registrados"
+          trendUp={true}
+        />
+        <KpiCard 
+          title="Total Residencias" 
+          value={totalResidencias} 
+          icon={<Home className="w-6 h-6 text-indigo-600" />} 
+          trend={`${residenciasOcupadas} ocupadas, ${residenciasDesocupadas} vacías`}
+          trendUp={residenciasDesocupadas === 0}
+        />
+        <KpiCard 
+          title="Recaudación Mes" 
+          value={`$${recaudacionMensual.toFixed(2)}`} 
+          icon={<DollarSign className="w-6 h-6 text-emerald-600" />} 
+          trend="Este mes"
+          trendUp={true}
+        />
+        <KpiCard 
+          title="Pagos Pendientes" 
+          value={pagosPendientes} 
+          icon={<Wallet className="w-6 h-6 text-amber-600" />} 
+          trend={pagosPendientes > 0 ? 'Existen deudas' : 'Todo al día'}
+          trendUp={pagosPendientes === 0}
+        />
+        <KpiCard 
+          title="Residencias Ocupadas" 
+          value={residenciasOcupadas} 
+          icon={<Building className="w-6 h-6 text-indigo-600" />} 
+        />
+        <KpiCard 
+          title="Residencias Desocupadas" 
+          value={residenciasDesocupadas} 
+          icon={<AlertTriangle className="w-6 h-6 text-amber-600" />} 
+        />
+        <KpiCard 
+          title="Comunicados Activos" 
+          value={comunicadosActivos} 
+          icon={<Megaphone className="w-6 h-6 text-blue-600" />} 
+        />
       </div>
     </div>
   );
